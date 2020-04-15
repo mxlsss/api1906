@@ -19,4 +19,4 @@ Route::post('login/reg','Api\LoginController@reg');
 //登录
 Route::post('login/','Api\LoginController@login');
 //商品详情
-Route::\Facade\FlareClient\Http\get('list','Api\LoginController@goodlist');
+Route::get('list','Api\LoginController@goodlist');

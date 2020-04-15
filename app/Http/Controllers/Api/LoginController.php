@@ -7,7 +7,7 @@ use App\Model\GoodModel;
 use Illuminate\Support\Str;
 use App\Model\UsersModel;
 use Illuminate\Http\Request;
-
+use GuzzleHttp\Client;
 class LoginController extends Controller
 {
   //注册
@@ -36,40 +36,19 @@ class LoginController extends Controller
     public function login(Request $request){
 
         $name = $request->input('username');
-        $password = $request->input('pass');
-//        echo $password;die;
-        $u = UsersModel::where(['username'=>$name])->first();
-//        echo $u->pass;die;
-        if($u){
-            //验证密码
-            if( ($password==$u->pass) ){
-                // 登录成功
-                //echo '登录成功';
-                //生成token
-                $token = Str::random(32);
-                $response = [
-                    'errno' => 0,
-                    'state'=> '登陆成功',
-                    'msg'   => 'ok',
-                    'data'  => [
+        $pass = $request->input('pass');
 
-                        'appid'=>$u['appid'],
-                        'token' => $token
-                    ]
-                ];
-            }else{
-                $response = [
-                    'errno' => 400003,
-                    'msg'   => '密码不正确'
-                ];
-            }
-        }else{
-            $response = [
-                'errno' => 400004,
-                'msg'   => '用户不存在'
-            ];
-        }
-        return $response;
+        // 发送HTTP请求
+        $client = new Client();
+
+        $uri = 'http://' .env('PASSPORT_HOST') . '/api/login'; // http[s]://passport.1906.com/api/login
+        $response = $client->request('POST',$uri,[
+            'form_params'   => [
+                'username'  => $name,
+                'pass'  => $pass
+            ]
+        ]);
+        return $response->getBody();
     }
 
     //商品详情
